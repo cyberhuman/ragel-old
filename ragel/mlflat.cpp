@@ -134,7 +134,7 @@ std::ostream &OCamlFlatCodeGen::ACTION_SWITCH()
 }
 
 
-std::ostream &OCamlFlatCodeGen::FLAT_INDEX_OFFSET()
+std::ostream &OCamlFlatCodeGen::FLAT_INDEX_OFFSET_ARRAYS()
 {
 	out << "\t";
 	int totalStateNum = 0, curIndOffset = 0;
@@ -145,6 +145,7 @@ std::ostream &OCamlFlatCodeGen::FLAT_INDEX_OFFSET()
 			out << ARR_SEP();
 			if ( ++totalStateNum % IALL == 0 )
 				out << "\n\t";
+			SPLIT_ARRAYS(totalStateNum);
 		}
 
 		/* Move the index offset ahead. */
@@ -158,7 +159,7 @@ std::ostream &OCamlFlatCodeGen::FLAT_INDEX_OFFSET()
 	return out;
 }
 
-std::ostream &OCamlFlatCodeGen::KEY_SPANS()
+std::ostream &OCamlFlatCodeGen::KEY_SPANS_ARRAYS()
 {
 	out << "\t";
 	int totalStateNum = 0;
@@ -172,13 +173,14 @@ std::ostream &OCamlFlatCodeGen::KEY_SPANS()
 			out << ARR_SEP();
 			if ( ++totalStateNum % IALL == 0 )
 				out << "\n\t";
+			SPLIT_ARRAYS(totalStateNum);
 		}
 	}
 	out << "\n";
 	return out;
 }
 
-std::ostream &OCamlFlatCodeGen::TO_STATE_ACTIONS()
+std::ostream &OCamlFlatCodeGen::TO_STATE_ACTIONS_ARRAYS()
 {
 	out << "\t";
 	int totalStateNum = 0;
@@ -189,13 +191,14 @@ std::ostream &OCamlFlatCodeGen::TO_STATE_ACTIONS()
 			out << ARR_SEP();
 			if ( ++totalStateNum % IALL == 0 )
 				out << "\n\t";
+			SPLIT_ARRAYS(totalStateNum);
 		}
 	}
 	out << "\n";
 	return out;
 }
 
-std::ostream &OCamlFlatCodeGen::FROM_STATE_ACTIONS()
+std::ostream &OCamlFlatCodeGen::FROM_STATE_ACTIONS_ARRAYS()
 {
 	out << "\t";
 	int totalStateNum = 0;
@@ -206,13 +209,14 @@ std::ostream &OCamlFlatCodeGen::FROM_STATE_ACTIONS()
 			out << ARR_SEP();
 			if ( ++totalStateNum % IALL == 0 )
 				out << "\n\t";
+			SPLIT_ARRAYS(totalStateNum);
 		}
 	}
 	out << "\n";
 	return out;
 }
 
-std::ostream &OCamlFlatCodeGen::EOF_ACTIONS()
+std::ostream &OCamlFlatCodeGen::EOF_ACTIONS_ARRAYS()
 {
 	out << "\t";
 	int totalStateNum = 0;
@@ -223,13 +227,14 @@ std::ostream &OCamlFlatCodeGen::EOF_ACTIONS()
 			out << ARR_SEP();
 			if ( ++totalStateNum % IALL == 0 )
 				out << "\n\t";
+			SPLIT_ARRAYS(totalStateNum);
 		}
 	}
 	out << "\n";
 	return out;
 }
 
-std::ostream &OCamlFlatCodeGen::EOF_TRANS()
+std::ostream &OCamlFlatCodeGen::EOF_TRANS_ARRAYS()
 {
 	out << "\t";
 	int totalStateNum = 0;
@@ -247,6 +252,7 @@ std::ostream &OCamlFlatCodeGen::EOF_TRANS()
 			out << ARR_SEP();
 			if ( ++totalStateNum % IALL == 0 )
 				out << "\n\t";
+			SPLIT_ARRAYS(totalStateNum);
 		}
 	}
 	out << "\n";
@@ -254,7 +260,7 @@ std::ostream &OCamlFlatCodeGen::EOF_TRANS()
 }
 
 
-std::ostream &OCamlFlatCodeGen::COND_KEYS()
+std::ostream &OCamlFlatCodeGen::COND_KEYS_ARRAYS()
 {
 	out << '\t';
 	int totalTrans = 0;
@@ -264,6 +270,7 @@ std::ostream &OCamlFlatCodeGen::COND_KEYS()
 		out << ALPHA_KEY( st->condHighKey ) << ARR_SEP();
 		if ( ++totalTrans % IALL == 0 )
 			out << "\n\t";
+		SPLIT_ARRAYS(totalTrans);
 	}
 
 	/* Output one last number so we don't have to figure out when the last
@@ -272,7 +279,7 @@ std::ostream &OCamlFlatCodeGen::COND_KEYS()
 	return out;
 }
 
-std::ostream &OCamlFlatCodeGen::COND_KEY_SPANS()
+std::ostream &OCamlFlatCodeGen::COND_KEY_SPANS_ARRAYS()
 {
 	out << "\t";
 	int totalStateNum = 0;
@@ -286,13 +293,14 @@ std::ostream &OCamlFlatCodeGen::COND_KEY_SPANS()
 			out << ARR_SEP();
 			if ( ++totalStateNum % IALL == 0 )
 				out << "\n\t";
+			SPLIT_ARRAYS(totalStateNum);
 		}
 	}
 	out << "\n";
 	return out;
 }
 
-std::ostream &OCamlFlatCodeGen::CONDS()
+std::ostream &OCamlFlatCodeGen::CONDS_ARRAYS()
 {
 	int totalTrans = 0;
 	out << '\t';
@@ -307,6 +315,7 @@ std::ostream &OCamlFlatCodeGen::CONDS()
 					out << "0" << ARR_SEP();
 				if ( ++totalTrans % IALL == 0 )
 					out << "\n\t";
+				SPLIT_ARRAYS(totalTrans);
 			}
 		}
 	}
@@ -317,7 +326,7 @@ std::ostream &OCamlFlatCodeGen::CONDS()
 	return out;
 }
 
-std::ostream &OCamlFlatCodeGen::COND_INDEX_OFFSET()
+std::ostream &OCamlFlatCodeGen::COND_INDEX_OFFSET_ARRAYS()
 {
 	out << "\t";
 	int totalStateNum = 0, curIndOffset = 0;
@@ -328,6 +337,7 @@ std::ostream &OCamlFlatCodeGen::COND_INDEX_OFFSET()
 			out << ARR_SEP();
 			if ( ++totalStateNum % IALL == 0 )
 				out << "\n\t";
+			SPLIT_ARRAYS(totalStateNum);
 		}
 
 		/* Move the index offset ahead. */
@@ -339,7 +349,7 @@ std::ostream &OCamlFlatCodeGen::COND_INDEX_OFFSET()
 }
 
 
-std::ostream &OCamlFlatCodeGen::KEYS()
+std::ostream &OCamlFlatCodeGen::KEYS_ARRAYS()
 {
 	out << '\t';
 	int totalTrans = 0;
@@ -349,6 +359,7 @@ std::ostream &OCamlFlatCodeGen::KEYS()
 		out << ALPHA_KEY( st->highKey ) << ARR_SEP();
 		if ( ++totalTrans % IALL == 0 )
 			out << "\n\t";
+		SPLIT_ARRAYS(totalTrans);
 	}
 
 	/* Output one last number so we don't have to figure out when the last
@@ -357,7 +368,7 @@ std::ostream &OCamlFlatCodeGen::KEYS()
 	return out;
 }
 
-std::ostream &OCamlFlatCodeGen::INDICIES()
+std::ostream &OCamlFlatCodeGen::INDICIES_ARRAYS()
 {
 	int totalTrans = 0;
 	out << '\t';
@@ -369,6 +380,7 @@ std::ostream &OCamlFlatCodeGen::INDICIES()
 				out << st->transList[pos]->id << ARR_SEP();
 				if ( ++totalTrans % IALL == 0 )
 					out << "\n\t";
+				SPLIT_ARRAYS(totalTrans);
 			}
 		}
 
@@ -378,6 +390,8 @@ std::ostream &OCamlFlatCodeGen::INDICIES()
 
 		if ( ++totalTrans % IALL == 0 )
 			out << "\n\t";
+
+		SPLIT_ARRAYS(totalTrans);
 	}
 
 	/* Output one last number so we don't have to figure out when the last
@@ -386,7 +400,7 @@ std::ostream &OCamlFlatCodeGen::INDICIES()
 	return out;
 }
 
-std::ostream &OCamlFlatCodeGen::TRANS_TARGS()
+std::ostream &OCamlFlatCodeGen::TRANS_TARGS_ARRAYS()
 {
 	/* Transitions must be written ordered by their id. */
 	RedTransAp **transPtrs = new RedTransAp*[redFsm->transSet.length()];
@@ -407,6 +421,7 @@ std::ostream &OCamlFlatCodeGen::TRANS_TARGS()
 			out << ARR_SEP();
 			if ( ++totalStates % IALL == 0 )
 				out << "\n\t";
+			SPLIT_ARRAYS(totalStates);
 		}
 	}
 	out << "\n";
@@ -415,7 +430,7 @@ std::ostream &OCamlFlatCodeGen::TRANS_TARGS()
 }
 
 
-std::ostream &OCamlFlatCodeGen::TRANS_ACTIONS()
+std::ostream &OCamlFlatCodeGen::TRANS_ACTIONS_ARRAYS()
 {
 	/* Transitions must be written ordered by their id. */
 	RedTransAp **transPtrs = new RedTransAp*[redFsm->transSet.length()];
@@ -433,6 +448,7 @@ std::ostream &OCamlFlatCodeGen::TRANS_ACTIONS()
 			out << ARR_SEP();
 			if ( ++totalAct % IALL == 0 )
 				out << "\n\t";
+			SPLIT_ARRAYS(totalAct);
 		}
 	}
 	out << "\n";
@@ -544,91 +560,91 @@ void OCamlFlatCodeGen::writeData()
 	/* If there are any transtion functions then output the array. If there
 	 * are none, don't bother emitting an empty array that won't be used. */
 	if ( redFsm->anyActions() ) {
-		OPEN_ARRAY( ARRAY_TYPE(redFsm->maxActArrItem), A() );
-		ACTIONS_ARRAY();
-		CLOSE_ARRAY() <<
+		OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxActArrItem), A() );
+		ACTIONS_ARRAYS();
+		CLOSE_ARRAYS() <<
 		"\n";
 	}
 
 	if ( redFsm->anyConditions() ) {
-		OPEN_ARRAY( WIDE_ALPH_TYPE(), CK() );
-		COND_KEYS();
-		CLOSE_ARRAY() <<
+		OPEN_ARRAYS( WIDE_ALPH_TYPE(), CK() );
+		COND_KEYS_ARRAYS();
+		CLOSE_ARRAYS() <<
 		"\n";
 
-		OPEN_ARRAY( ARRAY_TYPE(redFsm->maxCondSpan), CSP() );
-		COND_KEY_SPANS();
-		CLOSE_ARRAY() <<
+		OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxCondSpan), CSP() );
+		COND_KEY_SPANS_ARRAYS();
+		CLOSE_ARRAYS() <<
 		"\n";
 
-		OPEN_ARRAY( ARRAY_TYPE(redFsm->maxCond), C() );
-		CONDS();
-		CLOSE_ARRAY() <<
+		OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxCond), C() );
+		CONDS_ARRAYS();
+		CLOSE_ARRAYS() <<
 		"\n";
 
-		OPEN_ARRAY( ARRAY_TYPE(redFsm->maxCondIndexOffset), CO() );
-		COND_INDEX_OFFSET();
-		CLOSE_ARRAY() <<
+		OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxCondIndexOffset), CO() );
+		COND_INDEX_OFFSET_ARRAYS();
+		CLOSE_ARRAYS() <<
 		"\n";
 	}
 
-	OPEN_ARRAY( WIDE_ALPH_TYPE(), K() );
-	KEYS();
-	CLOSE_ARRAY() <<
+	OPEN_ARRAYS( WIDE_ALPH_TYPE(), K() );
+	KEYS_ARRAYS();
+	CLOSE_ARRAYS() <<
 	"\n";
 
-	OPEN_ARRAY( ARRAY_TYPE(redFsm->maxSpan), SP() );
-	KEY_SPANS();
-	CLOSE_ARRAY() <<
+	OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxSpan), SP() );
+	KEY_SPANS_ARRAYS();
+	CLOSE_ARRAYS() <<
 	"\n";
 
-	OPEN_ARRAY( ARRAY_TYPE(redFsm->maxFlatIndexOffset), IO() );
-	FLAT_INDEX_OFFSET();
-	CLOSE_ARRAY() <<
+	OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxFlatIndexOffset), IO() );
+	FLAT_INDEX_OFFSET_ARRAYS();
+	CLOSE_ARRAYS() <<
 	"\n";
 
-	OPEN_ARRAY( ARRAY_TYPE(redFsm->maxIndex), I() );
-	INDICIES();
-	CLOSE_ARRAY() <<
+	OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxIndex), I() );
+	INDICIES_ARRAYS();
+	CLOSE_ARRAYS() <<
 	"\n";
 
-	OPEN_ARRAY( ARRAY_TYPE(redFsm->maxState), TT() );
-	TRANS_TARGS();
-	CLOSE_ARRAY() <<
+	OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxState), TT() );
+	TRANS_TARGS_ARRAYS();
+	CLOSE_ARRAYS() <<
 	"\n";
 
 	if ( redFsm->anyActions() ) {
-		OPEN_ARRAY( ARRAY_TYPE(redFsm->maxActionLoc), TA() );
-		TRANS_ACTIONS();
-		CLOSE_ARRAY() <<
+		OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxActionLoc), TA() );
+		TRANS_ACTIONS_ARRAYS();
+		CLOSE_ARRAYS() <<
 		"\n";
 	}
 
 	if ( redFsm->anyToStateActions() ) {
-		OPEN_ARRAY( ARRAY_TYPE(redFsm->maxActionLoc), TSA() );
-		TO_STATE_ACTIONS();
-		CLOSE_ARRAY() <<
+		OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxActionLoc), TSA() );
+		TO_STATE_ACTIONS_ARRAYS();
+		CLOSE_ARRAYS() <<
 		"\n";
 	}
 
 	if ( redFsm->anyFromStateActions() ) {
-		OPEN_ARRAY( ARRAY_TYPE(redFsm->maxActionLoc), FSA() );
-		FROM_STATE_ACTIONS();
-		CLOSE_ARRAY() <<
+		OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxActionLoc), FSA() );
+		FROM_STATE_ACTIONS_ARRAYS();
+		CLOSE_ARRAYS() <<
 		"\n";
 	}
 
 	if ( redFsm->anyEofActions() ) {
-		OPEN_ARRAY( ARRAY_TYPE(redFsm->maxActionLoc), EA() );
-		EOF_ACTIONS();
-		CLOSE_ARRAY() <<
+		OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxActionLoc), EA() );
+		EOF_ACTIONS_ARRAYS();
+		CLOSE_ARRAYS() <<
 		"\n";
 	}
 
 	if ( redFsm->anyEofTrans() ) {
-		OPEN_ARRAY( ARRAY_TYPE(redFsm->maxIndexOffset+1), ET() );
-		EOF_TRANS();
-		CLOSE_ARRAY() <<
+		OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxIndexOffset+1), ET() );
+		EOF_TRANS_ARRAYS();
+		CLOSE_ARRAYS() <<
 		"\n";
 	}
 

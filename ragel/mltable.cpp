@@ -692,9 +692,9 @@ void OCamlTabCodeGen::writeData()
 	/* If there are any transtion functions then output the array. If there
 	 * are none, don't bother emitting an empty array that won't be used. */
 	if ( redFsm->anyActions() ) {
-		OPEN_ARRAY( ARRAY_TYPE(redFsm->maxActArrItem), A() );
-		ACTIONS_ARRAY();
-		CLOSE_ARRAY() <<
+		OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxActArrItem), A() );
+		ACTIONS_ARRAYS();
+		CLOSE_ARRAYS() <<
 		"\n";
 	}
 

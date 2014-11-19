@@ -121,7 +121,7 @@ string OCamlCodeGen::START_STATE_ID()
 };
 
 /* Write out the array of actions. */
-std::ostream &OCamlCodeGen::ACTIONS_ARRAY()
+std::ostream &OCamlCodeGen::ACTIONS_ARRAYS()
 {
 	out << "\t0; ";
 	int totalActions = 1;
@@ -131,6 +131,7 @@ std::ostream &OCamlCodeGen::ACTIONS_ARRAY()
 		/* Put in a line break every 8 */
 		if ( totalActions++ % 8 == 7 )
 			out << "\n\t";
+		SPLIT_ARRAYS(totalActions);
 
 		for ( GenActionTable::Iter item = act->key; item.lte(); item++ ) {
 			out << item->value->actionId;
@@ -140,6 +141,7 @@ std::ostream &OCamlCodeGen::ACTIONS_ARRAY()
 			/* Put in a line break every 8 */
 			if ( totalActions++ % 8 == 7 )
 				out << "\n\t";
+			SPLIT_ARRAYS(totalActions);
 		}
 	}
 	out << "\n";
@@ -631,6 +633,22 @@ std::ostream &OCamlCodeGen::OPEN_ARRAY( string type, string name )
 std::ostream &OCamlCodeGen::CLOSE_ARRAY()
 {
 	return out << "|]" << TOP_SEP();
+}
+
+std::ostream &OCamlCodeGen::OPEN_ARRAYS( string type, string name )
+{
+	out << "let " << name << " : " << type << " array = Array.concat [ [|" << endl;
+	return out;
+}
+
+std::ostream &OCamlCodeGen::CLOSE_ARRAYS()
+{
+	return out << "|] ]" << TOP_SEP();
+}
+
+void OCamlCodeGen::SPLIT_ARRAYS(int total)
+{
+  if (total % 16384 == 0) out << "|] ; [|\n\t";
 }
 
 string OCamlCodeGen::TOP_SEP()

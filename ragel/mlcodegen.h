@@ -72,7 +72,7 @@ protected:
 
 	string FSM_NAME();
 	string START_STATE_ID();
-	ostream &ACTIONS_ARRAY();
+	ostream &ACTIONS_ARRAYS();
 	string GET_WIDE_KEY();
 	string GET_WIDE_KEY( RedStateAp *state );
 	string TABS( int level );
@@ -171,6 +171,9 @@ protected:
 	virtual string PTR_CONST();
 	virtual ostream &OPEN_ARRAY( string type, string name );
 	virtual ostream &CLOSE_ARRAY();
+	virtual ostream &OPEN_ARRAYS( string type, string name );
+	virtual ostream &CLOSE_ARRAYS();
+	virtual void SPLIT_ARRAYS( int total);
 	virtual ostream &STATIC_VAR( string type, string name );
 
 	virtual string CTRL_FLOW();

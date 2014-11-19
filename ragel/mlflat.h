@@ -47,23 +47,23 @@ protected:
 	std::ostream &FROM_STATE_ACTION_SWITCH();
 	std::ostream &EOF_ACTION_SWITCH();
 	std::ostream &ACTION_SWITCH();
-	std::ostream &KEYS();
-	std::ostream &INDICIES();
-	std::ostream &FLAT_INDEX_OFFSET();
-	std::ostream &KEY_SPANS();
-	std::ostream &TO_STATE_ACTIONS();
-	std::ostream &FROM_STATE_ACTIONS();
-	std::ostream &EOF_ACTIONS();
-	std::ostream &EOF_TRANS();
-	std::ostream &TRANS_TARGS();
-	std::ostream &TRANS_ACTIONS();
+	std::ostream &KEYS_ARRAYS();
+	std::ostream &INDICIES_ARRAYS();
+	std::ostream &FLAT_INDEX_OFFSET_ARRAYS();
+	std::ostream &KEY_SPANS_ARRAYS();
+	std::ostream &TO_STATE_ACTIONS_ARRAYS();
+	std::ostream &FROM_STATE_ACTIONS_ARRAYS();
+	std::ostream &EOF_ACTIONS_ARRAYS();
+	std::ostream &EOF_TRANS_ARRAYS();
+	std::ostream &TRANS_TARGS_ARRAYS();
+	std::ostream &TRANS_ACTIONS_ARRAYS();
 	void LOCATE_TRANS();
 
-	std::ostream &COND_INDEX_OFFSET();
+	std::ostream &COND_INDEX_OFFSET_ARRAYS();
 	void COND_TRANSLATE();
-	std::ostream &CONDS();
-	std::ostream &COND_KEYS();
-	std::ostream &COND_KEY_SPANS();
+	std::ostream &CONDS_ARRAYS();
+	std::ostream &COND_KEYS_ARRAYS();
+	std::ostream &COND_KEY_SPANS_ARRAYS();
 
 	void GOTO( ostream &ret, int gotoDest, bool inFinish );
 	void CALL( ostream &ret, int callDest, int targState, bool inFinish );

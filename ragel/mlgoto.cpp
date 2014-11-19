@@ -630,9 +630,9 @@ void OCamlGotoCodeGen::BREAK( ostream &ret, int targState )
 void OCamlGotoCodeGen::writeData()
 {
 	if ( redFsm->anyActions() ) {
-		OPEN_ARRAY( ARRAY_TYPE(redFsm->maxActArrItem), A() );
-		ACTIONS_ARRAY();
-		CLOSE_ARRAY() <<
+		OPEN_ARRAYS( ARRAY_TYPE(redFsm->maxActArrItem), A() );
+		ACTIONS_ARRAYS();
+		CLOSE_ARRAYS() <<
 		"\n";
 	}
 
