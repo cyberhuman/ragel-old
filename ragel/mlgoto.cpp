@@ -424,7 +424,7 @@ std::ostream &OCamlGotoCodeGen::EXEC_FUNCS()
 		"		match " << AT( A(), POST_INCR("state.acts") ) << " with\n";
 		ACTION_SWITCH();
 		SWITCH_DEFAULT() <<
-		"	done with Goto_again -> () end;\n"
+		"	done with " << LABEL("again") << " -> () end;\n"
 		"	do_again ()\n";
 	return out;
 }
@@ -547,14 +547,14 @@ std::ostream &OCamlGotoCodeGen::FINISH_CASES()
 void OCamlGotoCodeGen::GOTO( ostream &ret, int gotoDest, bool inFinish )
 {
 	ret << "begin " << vCS() << " <- " << gotoDest << "; " << 
-			CTRL_FLOW() << "raise Goto_again end";
+			CTRL_FLOW() << JUMP("again") << " end";
 }
 
 void OCamlGotoCodeGen::GOTO_EXPR( ostream &ret, GenInlineItem *ilItem, bool inFinish )
 {
 	ret << "begin " << vCS() << " <- (";
 	INLINE_LIST( ret, ilItem->children, 0, inFinish );
-	ret << "); " << CTRL_FLOW() << "raise Goto_again end";
+	ret << "); " << CTRL_FLOW() << JUMP("again") << " end";
 }
 
 void OCamlGotoCodeGen::CURS( ostream &ret, bool inFinish )
@@ -587,7 +587,7 @@ void OCamlGotoCodeGen::CALL( ostream &ret, int callDest, int targState, bool inF
 	}
 
 	ret << "begin " << AT( STACK(), POST_INCR(TOP()) ) << " <- " << vCS() << "; ";
-  ret << vCS() << " <- " << callDest << "; " << CTRL_FLOW() << "raise Goto_again end ";
+  ret << vCS() << " <- " << callDest << "; " << CTRL_FLOW() << JUMP("again") << " end ";
 
 	if ( prePushExpr != 0 )
 		ret << "end";
@@ -602,7 +602,7 @@ void OCamlGotoCodeGen::CALL_EXPR( ostream &ret, GenInlineItem *ilItem, int targS
 
 	ret << "begin " << AT(STACK(), POST_INCR(TOP()) ) << " <- " << vCS() << "; " << vCS() << " <- (";
 	INLINE_LIST( ret, ilItem->children, targState, inFinish );
-	ret << "); " << CTRL_FLOW() << "raise Goto_again end ";
+	ret << "); " << CTRL_FLOW() << JUMP("again") << " end ";
 
 	if ( prePushExpr != 0 )
 		ret << "end";
@@ -618,13 +618,13 @@ void OCamlGotoCodeGen::RET( ostream &ret, bool inFinish )
 		ret << "end ";
 	}
 
-	ret << CTRL_FLOW() <<  "raise Goto_again end";
+	ret << CTRL_FLOW() <<  JUMP("again") << " end";
 }
 
 void OCamlGotoCodeGen::BREAK( ostream &ret, int targState )
 {
 	outLabelUsed = true;
-	ret << "begin " << P() << " <- " << P() << " + 1; " << CTRL_FLOW() << "raise Goto_out end";
+	ret << "begin " << P() << " <- " << P() << " + 1; " << CTRL_FLOW() << JUMP("out") << " end";
 }
 
 void OCamlGotoCodeGen::writeData()
@@ -663,7 +663,8 @@ void OCamlGotoCodeGen::writeData()
          " ; mutable nacts : " << ARRAY_TYPE(redFsm->maxActArrItem) << "; }"
     << TOP_SEP();
 
-  out << "exception Goto_again" << TOP_SEP();
+  out << "exception " << LABEL("again") << TOP_SEP();
+  out << "exception " << LABEL("out") << TOP_SEP();
 }
 
 void OCamlGotoCodeGen::writeExec()
@@ -801,7 +802,7 @@ void OCamlGotoCodeGen::writeExec()
 				EOF_ACTION_SWITCH();
 				SWITCH_DEFAULT() <<
 				"		end;\n"
-				"	done with Goto_again -> do_again () end;\n";
+				"	done with " << LABEL("again") << " -> do_again () end;\n";
 		}
 
 		out <<

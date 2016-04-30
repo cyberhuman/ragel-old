@@ -238,9 +238,9 @@ void OCamlFFlatCodeGen::writeData()
   out << "type " << TYPE_STATE() << " = { mutable keys : int; mutable trans : int; }"
     << TOP_SEP();
 
-  out << "exception Goto_match" << TOP_SEP();
-  out << "exception Goto_again" << TOP_SEP();
-  out << "exception Goto_eof_trans" << TOP_SEP();
+  out << "exception " << LABEL("match") << TOP_SEP();
+  out << "exception " << LABEL("again") << TOP_SEP();
+  out << "exception " << LABEL("eof_trans") << TOP_SEP();
 }
 
 void OCamlFFlatCodeGen::writeExec()
@@ -314,7 +314,7 @@ void OCamlFFlatCodeGen::writeExec()
 
   out << "\tbegin try\n";
 	LOCATE_TRANS();
-  out << "\twith Goto_match -> () end;\n";
+  out << "\twith " << LABEL("match") << " -> () end;\n";
 
   out << "\tdo_eof_trans ()\n";
 	
@@ -331,12 +331,12 @@ void OCamlFFlatCodeGen::writeExec()
 	if ( redFsm->anyRegActions() ) {
 		out << 
 			"	begin try if " << AT( TA() , "state.trans" ) << " = 0 then\n"
-			"		raise Goto_again;\n"
+			"		raise " << LABEL("again") << ";\n"
 			"\n"
 			"	match " << AT( TA(), "state.trans" ) << " with\n";
 			ACTION_SWITCH();
 			SWITCH_DEFAULT() <<
-			"	with Goto_again -> () end;\n"
+			"	with " << LABEL("again") << " -> () end;\n"
 			"\n";
 	}
   out << "\tdo_again ()\n";
@@ -388,7 +388,7 @@ void OCamlFFlatCodeGen::writeExec()
 				"	if " << AT( ET(), vCS() ) << " > 0 then\n"
 				"	begin\n"
         "   state.trans <- " << CAST(transType) << "(" << AT( ET(), vCS() ) << " - 1);\n"
-				"		raise Goto_eof_trans;\n"
+				"		" << JUMP("eof_trans") << ";\n"
 				"	end;\n";
 		}
 
@@ -401,8 +401,8 @@ void OCamlFFlatCodeGen::writeExec()
 		}
 
 		out << 
-			"	with Goto_again -> do_again ()\n"
-			"	| Goto_eof_trans -> do_eof_trans () end\n"
+			"	with " << LABEL("again") << " -> do_again ()\n"
+			"	| " << LABEL("eof_trans") << " -> do_eof_trans () end\n"
 			"\n";
 	}
   else

@@ -607,14 +607,14 @@ std::ostream &OCamlTabCodeGen::TRANS_ACTIONS_WI()
 void OCamlTabCodeGen::GOTO( ostream &ret, int gotoDest, bool inFinish )
 {
 	ret << "begin " << vCS() << " <- " << gotoDest << "; " << 
-			CTRL_FLOW() << "raise Goto_again end";
+			CTRL_FLOW() << JUMP("again") << " end";
 }
 
 void OCamlTabCodeGen::GOTO_EXPR( ostream &ret, GenInlineItem *ilItem, bool inFinish )
 {
 	ret << "begin " << vCS() << " <- (";
 	INLINE_LIST( ret, ilItem->children, 0, inFinish );
-	ret << "); " << CTRL_FLOW() << "raise Goto_again end";
+	ret << "); " << CTRL_FLOW() << JUMP("again") << " end";
 }
 
 void OCamlTabCodeGen::CURS( ostream &ret, bool inFinish )
@@ -647,7 +647,7 @@ void OCamlTabCodeGen::CALL( ostream &ret, int callDest, int targState, bool inFi
 	}
 
 	ret << "begin " << AT( STACK(), POST_INCR(TOP()) ) << " <- " << vCS() << "; ";
-  ret << vCS() << " <- " << callDest << "; " << CTRL_FLOW() << "raise Goto_again end ";
+  ret << vCS() << " <- " << callDest << "; " << CTRL_FLOW() << JUMP("again") << " end ";
 
 	if ( prePushExpr != 0 )
 		ret << "end";
@@ -662,7 +662,7 @@ void OCamlTabCodeGen::CALL_EXPR( ostream &ret, GenInlineItem *ilItem, int targSt
 
 	ret << "begin " << AT(STACK(), POST_INCR(TOP()) ) << " <- " << vCS() << "; " << vCS() << " <- (";
 	INLINE_LIST( ret, ilItem->children, targState, inFinish );
-	ret << "); " << CTRL_FLOW() << "raise Goto_again end ";
+	ret << "); " << CTRL_FLOW() << JUMP("again") << " end ";
 
 	if ( prePushExpr != 0 )
 		ret << "end";
@@ -678,13 +678,13 @@ void OCamlTabCodeGen::RET( ostream &ret, bool inFinish )
 		ret << "end ";
 	}
 
-	ret << CTRL_FLOW() <<  "raise Goto_again end";
+	ret << CTRL_FLOW() << JUMP("again") << " end";
 }
 
 void OCamlTabCodeGen::BREAK( ostream &ret, int targState )
 {
 	outLabelUsed = true;
-	ret << "begin " << P() << " <- " << P() << " + 1; " << CTRL_FLOW() << "raise Goto_out end";
+	ret << "begin " << P() << " <- " << P() << " + 1; " << CTRL_FLOW() << JUMP("out") << " end";
 }
 
 void OCamlTabCodeGen::writeData()
@@ -810,9 +810,10 @@ void OCamlTabCodeGen::writeData()
   out << "type " << TYPE_STATE() << " = { mutable keys : int; mutable trans : int; mutable acts : int; mutable nacts : int; }"
     << TOP_SEP();
 
-  out << "exception Goto_match" << TOP_SEP();
-  out << "exception Goto_again" << TOP_SEP();
-  out << "exception Goto_eof_trans" << TOP_SEP();
+  out << "exception " << LABEL("match") << TOP_SEP();
+  out << "exception " << LABEL("again") << TOP_SEP();
+  out << "exception " << LABEL("eof_trans") << TOP_SEP();
+  out << "exception " << LABEL("out") << TOP_SEP();
 }
 
 void OCamlTabCodeGen::LOCATE_TRANS()
@@ -834,7 +835,7 @@ void OCamlTabCodeGen::LOCATE_TRANS()
 		"				lower := " << CAST(signedKeysType) << " (mid + 1)\n"
 		"			else begin\n"
 		"				state.trans <- state.trans + " << CAST(transType) << " (mid - state.keys);\n"
-		"				raise Goto_match;\n"
+		"				" << JUMP("match") << ";\n"
 		"			end\n"
 		"		done;\n"
 		"		state.keys <- state.keys + " << CAST(keysType) << " klen;\n"
@@ -854,7 +855,7 @@ void OCamlTabCodeGen::LOCATE_TRANS()
 		"				lower := " << CAST(signedKeysType) << " (mid + 2)\n"
 		"			else begin\n"
 		"				state.trans <- state.trans + " << CAST(transType) << "((mid - state.keys) / 2);\n"
-		"				raise Goto_match;\n"
+		"				" << JUMP("match") << ";\n"
 		"		  end\n"
 		"		done;\n"
 		"		state.trans <- state.trans + " << CAST(transType) << " klen;\n"
@@ -990,7 +991,7 @@ void OCamlTabCodeGen::writeExec()
 
   out << "\tbegin try\n";
 	LOCATE_TRANS();
-  out << "\twith Goto_match -> () end;\n";
+  out << "\twith " << LABEL("match") << " -> () end;\n";
 
   out << 
     "\tdo_match ()\n";
@@ -1016,7 +1017,7 @@ void OCamlTabCodeGen::writeExec()
 		out <<
 			"\tbegin try\n"
       "	match " << AT( TA(), "state.trans" ) << " with\n"
-			"\t| 0 -> raise Goto_again\n"
+			"\t| 0 -> " << JUMP("again") << "\n"
       "\t| _ ->\n"
 			"	state.acts <- " << AT( TA(), "state.trans" ) << ";\n"
 			"	state.nacts <- " << AT( A(), POST_INCR("state.acts") ) << ";\n"
@@ -1026,7 +1027,7 @@ void OCamlTabCodeGen::writeExec()
 			SWITCH_DEFAULT() <<
 			"		end;\n"
 			"	done\n"
-      "\twith Goto_again -> () end;\n";
+      "\twith " << LABEL("again") << " -> () end;\n";
 	}
   out << "\tdo_again ()\n";
 
@@ -1081,7 +1082,7 @@ void OCamlTabCodeGen::writeExec()
 				"	if " << AT( ET(), vCS() ) << " > 0 then\n"
 				"	begin\n"
         "   state.trans <- " << CAST(transType) << "(" << AT( ET(), vCS() ) << " - 1);\n"
-				"		raise Goto_eof_trans;\n"
+				"		" << JUMP("eof_trans") << ";\n"
 				"	end;\n";
 		}
 
@@ -1100,8 +1101,8 @@ void OCamlTabCodeGen::writeExec()
 		}
 
 		out << 
-			"	with Goto_again -> do_again ()\n"
-			"	| Goto_eof_trans -> do_eof_trans () end\n"
+			"	with " << LABEL("again") << " -> do_again ()\n"
+			"	| " << LABEL("eof_trans") << " -> do_eof_trans () end\n"
 			"\n";
 	}
   else

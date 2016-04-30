@@ -475,14 +475,14 @@ void OCamlFlatCodeGen::LOCATE_TRANS()
 void OCamlFlatCodeGen::GOTO( ostream &ret, int gotoDest, bool inFinish )
 {
 	ret << "begin " << vCS() << " <- " << gotoDest << "; " << 
-			CTRL_FLOW() << "raise Goto_again end";
+			CTRL_FLOW() << JUMP("again") << " end";
 }
 
 void OCamlFlatCodeGen::GOTO_EXPR( ostream &ret, GenInlineItem *ilItem, bool inFinish )
 {
 	ret << "begin " << vCS() << " <- (";
 	INLINE_LIST( ret, ilItem->children, 0, inFinish );
-	ret << "); " << CTRL_FLOW() << " raise Goto_again end";
+	ret << "); " << CTRL_FLOW() << JUMP("again") << " end";
 }
 
 void OCamlFlatCodeGen::CURS( ostream &ret, bool inFinish )
@@ -515,7 +515,7 @@ void OCamlFlatCodeGen::CALL( ostream &ret, int callDest, int targState, bool inF
 	}
 
 	ret << "begin " << AT( STACK(), POST_INCR(TOP()) ) << " <- " << vCS() << "; ";
-  ret << vCS() << " <- " << callDest << "; " << CTRL_FLOW() << "raise Goto_again end ";
+  ret << vCS() << " <- " << callDest << "; " << CTRL_FLOW() << JUMP("again") << " end ";
 
 	if ( prePushExpr != 0 )
 		ret << "end";
@@ -530,7 +530,7 @@ void OCamlFlatCodeGen::CALL_EXPR( ostream &ret, GenInlineItem *ilItem, int targS
 
 	ret << "begin " << AT(STACK(), POST_INCR(TOP()) ) << " <- " << vCS() << "; " << vCS() << " <- (";
 	INLINE_LIST( ret, ilItem->children, targState, inFinish );
-	ret << "); " << CTRL_FLOW() << "raise Goto_again end ";
+	ret << "); " << CTRL_FLOW() << JUMP("again") << " end ";
 
 	if ( prePushExpr != 0 )
 		ret << "end";
@@ -546,13 +546,13 @@ void OCamlFlatCodeGen::RET( ostream &ret, bool inFinish )
 		ret << "end ";
 	}
 
-	ret << CTRL_FLOW() <<  "raise Goto_again end";
+	ret << CTRL_FLOW() << JUMP("again") << " end";
 }
 
 void OCamlFlatCodeGen::BREAK( ostream &ret, int targState )
 {
 	outLabelUsed = true;
-	ret << "begin " << P() << " <- " << P() << " + 1; " << CTRL_FLOW() << "raise Goto_out end";
+	ret << "begin " << P() << " <- " << P() << " + 1; " << CTRL_FLOW() << JUMP("out") << " end";
 }
 
 void OCamlFlatCodeGen::writeData()
@@ -653,9 +653,10 @@ void OCamlFlatCodeGen::writeData()
   out << "type " << TYPE_STATE() << " = { mutable trans : int; mutable acts : int; mutable nacts : int; }"
     << TOP_SEP();
 
-  out << "exception Goto_match" << TOP_SEP();
-  out << "exception Goto_again" << TOP_SEP();
-  out << "exception Goto_eof_trans" << TOP_SEP();
+  out << "exception " << LABEL("match") << TOP_SEP();
+  out << "exception " << LABEL("again") << TOP_SEP();
+  out << "exception " << LABEL("eof_trans") << TOP_SEP();
+  out << "exception " << LABEL("out") << TOP_SEP();
 }
 
 void OCamlFlatCodeGen::COND_TRANSLATE()
@@ -800,7 +801,7 @@ void OCamlFlatCodeGen::writeExec()
 
 //  out << "\tbegin try\n";
 	LOCATE_TRANS();
-//  out << "\twith Goto_match -> () end;\n";
+//  out << "\twith " << LABEL("match") << " -> () end;\n";
 
   out << "\tdo_eof_trans ()\n";
 
@@ -818,7 +819,7 @@ void OCamlFlatCodeGen::writeExec()
 		out <<
 			"\tbegin try\n"
       "	match " << AT( TA(), "state.trans" ) << " with\n"
-			"\t| 0 -> raise Goto_again\n"
+			"\t| 0 -> " << JUMP("again") << "\n"
       "\t| _ ->\n"
 			"	state.acts <- " << AT( TA(), "state.trans" ) << ";\n"
 			"	state.nacts <- " << AT( A(), POST_INCR("state.acts") ) << ";\n"
@@ -828,7 +829,7 @@ void OCamlFlatCodeGen::writeExec()
 			SWITCH_DEFAULT() <<
 			"		end;\n"
 			"	done\n"
-      "\twith Goto_again -> () end;\n";
+      "\twith " << LABEL("again") << " -> () end;\n";
 	}
   out << "\tdo_again ()\n";
 
@@ -883,7 +884,7 @@ void OCamlFlatCodeGen::writeExec()
 				"	if " << AT( ET(), vCS() ) << " > 0 then\n"
 				"	begin\n"
         "   state.trans <- " << CAST(transType) << "(" << AT( ET(), vCS() ) << " - 1);\n"
-				"		raise Goto_eof_trans;\n"
+				"		" << JUMP("eof_trans") << ";\n"
 				"	end;\n";
 		}
 
@@ -902,8 +903,8 @@ void OCamlFlatCodeGen::writeExec()
 		}
 
 		out << 
-			"	with Goto_again -> do_again ()\n"
-			"	| Goto_eof_trans -> do_eof_trans () end\n"
+			"	with " << LABEL("again") << " -> do_again ()\n"
+			"	| " << LABEL("eof_trans") << " -> do_eof_trans () end\n"
 			"\n";
 	}
   else

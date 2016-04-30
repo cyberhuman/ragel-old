@@ -40,7 +40,7 @@ std::ostream &OCamlFGotoCodeGen::EXEC_ACTIONS()
 			for ( GenActionTable::Iter item = redAct->key; item.lte(); item++ )
 				ACTION( out, item->value, 0, false );
 
-			out << "\twith Goto_again -> () end;\n";
+			out << "\twith " << LABEL("again") << " -> () end;\n";
 			out << "\tdo_again ()\n";
 		}
 	}
@@ -177,7 +177,7 @@ void OCamlFGotoCodeGen::writeData()
 
 	STATE_IDS();
 
-  out << "exception Goto_again" << TOP_SEP();
+  out << "exception " << LABEL("again") << TOP_SEP();
 }
 
 void OCamlFGotoCodeGen::writeExec()
@@ -293,7 +293,7 @@ void OCamlFGotoCodeGen::writeExec()
 				EOF_ACTION_SWITCH();
 				SWITCH_DEFAULT() <<
 				"	\n"
-				"	with Goto_again -> do_again () \n";
+				"	with " << LABEL("again") << " -> do_again () \n";
 		}
 
 		out <<
