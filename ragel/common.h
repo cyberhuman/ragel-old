@@ -117,7 +117,7 @@ struct HostType
 	bool isOrd;
 	bool isChar;
 	long long minVal;
-	long long maxVal;
+	long long unsigned maxVal;
 	unsigned int size;
 };
 
@@ -198,7 +198,7 @@ struct KeyOps
 	Size alphSize()
 		{ return span( minKey, maxKey ); }
 
-	HostType *typeSubsumes( long long maxVal )
+	HostType *typeSubsumes( long long unsigned maxVal )
 	{
 		for ( int i = 0; i < hostLang->numHostTypes; i++ ) {
 			if ( maxVal <= hostLang->hostTypes[i].maxVal )
@@ -207,7 +207,7 @@ struct KeyOps
 		return 0;
 	}
 
-	HostType *typeSubsumes( bool isSigned, long long maxVal )
+	HostType *typeSubsumes( bool isSigned, long long unsigned maxVal )
 	{
 		for ( int i = 0; i < hostLang->numHostTypes; i++ ) {
 			if ( ( ( isSigned && hostLang->hostTypes[i].isSigned ) || !isSigned ) &&
