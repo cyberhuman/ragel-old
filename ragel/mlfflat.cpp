@@ -331,7 +331,7 @@ void OCamlFFlatCodeGen::writeExec()
 	if ( redFsm->anyRegActions() ) {
 		out << 
 			"	begin try if " << AT( TA() , "state.trans" ) << " = 0 then\n"
-			"		raise " << LABEL("again") << ";\n"
+			"		raise_notrace " << LABEL("again") << ";\n"
 			"\n"
 			"	match " << AT( TA(), "state.trans" ) << " with\n";
 			ACTION_SWITCH();

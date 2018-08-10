@@ -141,7 +141,7 @@ protected:
 	string FIRST_FINAL() { return DATA_PREFIX() + "first_final"; }
 	string CTXDATA() { return DATA_PREFIX() + "ctxdata"; }
 	string LABEL(string name) { return "Goto_" + name + "_" + fsmName; }
-	string JUMP(char const* name) { return "raise " + LABEL(name); }
+	string JUMP(char const* name) { return "raise_notrace " + LABEL(name); }
 
 	void INLINE_LIST( ostream &ret, GenInlineList *inlineList, int targState, bool inFinish );
 	virtual void GOTO( ostream &ret, int gotoDest, bool inFinish ) = 0;
